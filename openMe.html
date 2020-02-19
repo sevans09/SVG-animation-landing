@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script lang="javascript" src="js/jquery-3.1.0.min.js"></script>
+	<script lang="javascript" src="js/d3.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<style>
+		html, body {
+			padding: 0;
+			margin: 0;
+		}
+		.title {
+			padding: 50px;
+			margin-left: 24vw;
+			margin-right: 24vw;
+			margin-top: 10vw;
+			align-items: center;
+			position: absolute;
+			font: 6vw futura, sans-serif;
+			text-decoration: underline overline #bfbfbf;
+		}
+		p {
+			padding: 50px;
+			margin-left: 24vw;
+			margin-right: 24vw;
+			margin-top: 10vw;
+			align-items: center;
+			font: 6vw futura, sans-serif;
+			text-decoration: underline overline #bfbfbf;
+		}
+	</style>
+</head>
+<body>
+	<div class="header">
+	  <a href="#default" class="logo">Header</a>
+	  <div class="header-right">
+	    <a class="active" href="#home">Home</a>
+	    <a href="#about" id ="aboutButton">About</a>
+	    <a href="#projects" id ="projectButton">Projects</a>
+	    <a href="#experiences" id ="experiencesButton">Experiences</a>
+	    <a href="#resume">Resume</a>
+	  </div>
+	</div>
+
+	<script>
+		var width = window.innerWidth;
+		var windowHt = window.innerHeight;
+
+		$("#projectButton").click(function() {
+		    $('html,body').animate({
+		        scrollTop: $("#projects").offset().top},1500);
+		});
+		$("#aboutButton").click(function() {
+		    $('html,body').animate({
+		        scrollTop: $("#about").offset().top},1500);
+		});
+		$("#experiencesButton").click(function() {
+		    $('html,body').animate({
+		        scrollTop: $("#experiences").offset().top},1500);
+		});
+
+	</script>
+	<div id="svg-land">
+		<p class="title">
+			Sook-Hee Evans
+		</p>
+	</div>
+
+	<div id ="about">
+		<p>
+			About
+		</p>
+	</div>
+
+	<div id ="projects">
+		<p>
+			Projects
+		</p>
+	</div>
+
+	<div id ="experiences">
+		<p>
+			Experiences
+		</p>
+	</div>
+
+	<script>
+		var width = window.innerWidth;
+		var height = window.innerHeight;
+
+		var svg = d3.select('#svg-land').append('svg')
+			.attr('width', width)
+			.attr('height', height)
+			.style('background-color', 'white');
+
+		rad = height >= 600 ? 12 : 8
+
+	    var nodes = d3.range(700).map(function()
+					{ return {r: Math.random() * rad + 8}; }),
+	        mouse = nodes[0]
+
+	    var piyg = d3.scaleSequential(d3.interpolatePiYG);
+// 	    var color = d3.scaleOrdinal().range(d3.schemeCategory20)
+	    var color = d3.scaleLinear().domain([1,10]).range(["#b3ecff", "#ffb3d9"])
+	    // var color = d3.scaleOrdinal(d3.schemePaired).range(20)
+
+	    mouse.radius = 0
+	    mouse.fixed = true
+
+	    forceX = d3.forceX(width / 2).strength(0.0010)
+	  	forceY = d3.forceY(height / 2).strength(0.0010)
+
+	    var force = d3.forceSimulation()
+	    .velocityDecay(0.2)
+	    .force("x", forceX)
+	    .force("y", forceY)
+
+	    .force("collide", d3.forceCollide().radius(function(d){
+	      if(d === mouse){
+	        return Math.random() * 10 + 100;
+	      }
+	      return d.r + 0.5;
+	    }).iterations(5))
+	    .nodes(nodes).on("tick", ticked);
+
+			//create circles
+	    svg.selectAll("circle")
+	        .data(nodes.slice(1))
+	        .enter().append("circle")
+	        .attr("r", function(d) { return d.r; })
+	        // 10 is purpley
+	        // want 11-15
+	        .style("fill", function(d, i) { return color((i+5) % 10 ); });
+
+			//at each iteration, move circles
+	    function ticked(e) {
+	        svg.selectAll("circle")
+	            .attr("cx", function(d) { return d.x; })
+	            .attr("cy", function(d) { return d.y; });
+	    };
+
+			//Any time mouse moves, set it's x and y coordinates
+	    svg.on("mousemove", function() {
+	        var pos = d3.mouse(this);
+	        mouse.fx = pos[0];
+	        mouse.fy = pos[1];
+					//reset the force simulation
+	        force.alphaTarget(0.3).restart();
+	    });
+
+			// YOUR CODE SHOULD END HERE
+	
+
+
+		// YOUR CODE SHOULD END HERE
+	</script>
+</body>
+</html>
